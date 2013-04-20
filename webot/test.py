@@ -1,9 +1,10 @@
+# coding=GBK
 '''
 Created on 2013-4-20
 
 @author: zxkletters
 '''
-# coding: utf8
+
 import httplib
 from hashlib import sha1
 import time
