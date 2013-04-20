@@ -8,10 +8,6 @@ import httplib
 from hashlib import sha1
 import time
 
-headers = {
-    "Content-Type": "application/xml"
-}
-
 xml = """<xml><ToUserName><![CDATA[toUser]]></ToUserName>
  <FromUserName><![CDATA[fromUser]]></FromUserName> 
  <CreateTime>%d</CreateTime>
@@ -30,7 +26,7 @@ signature = sha1("".join(valueList)).hexdigest()
 url = "/gate?timestamp=" + timestamp + "&nonce=" + nonce + "&echostr=" + echostr + "&signature=" + signature
 
 conn = httplib.HTTPConnection(host="127.0.0.1", port=8080)
-conn.request(method='POST', url=url, body=xml % time.time(), headers=headers)
+conn.request(method='POST', url=url, body=xml % time.time(), headers={"Content-Type": "application/xml"})
 response = conn.getresponse()
 
 print response.getheaders()

@@ -28,9 +28,18 @@ def toUnicode(value):
 # test func
 if __name__ == "__main__":
     class test(unittest.TestCase):
-        def testCheckSignature(self):
+        def testCheckSignature_fail(self):
             self.assertFalse(checkSignature())
             self.assertFalse(checkSignature(token="test"))
+            
+        def testCheckSignature_success(self):
+            # args have sorted
+            token = "111"
+            timestamp = "2222"
+            nonce = "3333"
+            
+            signature = sha1("".join([token, timestamp, nonce])).hexdigest()
+            self.assertTrue(checkSignature(token, timestamp, nonce, signature))
             
     unittest.main()
     
