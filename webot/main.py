@@ -3,14 +3,20 @@ Created on 2013-4-20
 
 @author: zxkletters
 '''
-import time
+import logging
 import webapp2
 import parseWinXinMsg as WX
 from utils import checkSignature
 from utils import toUnicode
+from HandlerDispatcher import HandlerDispatcher
 
 # your token put here
 token = ""
+
+
+FORMAT = '%(asctime)-15s  %(message)s'
+logging.basicConfig(format=FORMAT, level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class home(webapp2.RequestHandler):
     def get(self):
@@ -25,15 +31,21 @@ class home(webapp2.RequestHandler):
             webapp2.abort(403)
         
     def post(self):
-        toUser, fromUser, content, msgType = WX.parseReceivedMsg(self.response.body)
+#         signature = self.request.get("signature", None)
+#         timestamp = self.request.get("timestamp", None)
+#         nonce = self.request.get("nonce", None)
+#         if not checkSignature(signature = signature, timestamp = timestamp, nonce = nonce, token = token):
+#             webapp2.abort(403)
+        
+        logger.info("request.body:\n%s" % self.request.body)
+        message = WX.generateMessage(self.request.body)
+        
+        # you can handle message here, example: substring content,then reply
+        handler = HandlerDispatcher(message).dispatcher()
+        replyString = handler.handle()
+        
         self.response.content_type = "application/xml"
-
-        if msgType == "text":
-            # TODO handle received content first , then reply
-            self.response.write(toUnicode(WX.generateReplyMsg(toUser, fromUser, "yes,you are success")))
-        else:
-            replyContent = "not support %s now, but comming soon" % msgType
-            self.response.write(toUnicode(WX.unSupportMsg % (fromUser, toUser, time.time(), replyContent)))
+        self.response.write(toUnicode(replyString))
         
 class welcome(webapp2.RequestHandler):
     def get(self):
@@ -41,7 +53,7 @@ class welcome(webapp2.RequestHandler):
     
     def post(self):
         self.response.write("welcome! you may have interests to subscribe zxkletters")
-        
+
 # your wsgi's app , url mapping shoud put here
 app = webapp2.WSGIApplication([
                                ('/', welcome),

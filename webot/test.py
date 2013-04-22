@@ -1,19 +1,18 @@
-# coding=GBK
+# coding=utf-8
 '''
 Created on 2013-4-20
 
 @author: zxkletters
 '''
-
 import httplib
 from hashlib import sha1
 import time
 
-xml = """<xml><ToUserName><![CDATA[toUser]]></ToUserName>
- <FromUserName><![CDATA[fromUser]]></FromUserName> 
+xml = """<xml><ToUserName><![CDATA[xiaoke]]></ToUserName>
+ <FromUserName><![CDATA[zxkletters]]></FromUserName> 
  <CreateTime>%d</CreateTime>
  <MsgType><![CDATA[text]]></MsgType>
- <Content><![CDATA[this is a test]]></Content>
+ <Content><![CDATA[Ping]]></Content>
  <MsgId>1111111</MsgId>
 </xml>"""
 
