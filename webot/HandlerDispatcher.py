@@ -5,8 +5,10 @@ Created on 2013-4-22
 @author: zxkletters
 '''
 import time
+from utils import logInfo
 from Message import textTemplate
-import handler.QueryFundHandler as QueryFundHandler
+from handler.QueryFundHandler import QueryFundHandler
+from handler.HelpHandler import HelpHandler
 
 # __all__ = ["dispatcher"]
 
@@ -33,11 +35,19 @@ class HandlerDispatcher(object):
         if self.message.msgType == "text":
             content = self.message.content
             
-            if content.find("ping") > 0 or content.find("Ping"):
+            if content.find("help") >= 0 or content.find("Help") >= 0 \
+                or content.find("?") >= 0:
+                logInfo("select HelpHandler to service request")
+                return HelpHandler(self.message)
+            
+            if content.find("ping") >= 0 or content.find("Ping") >= 0:
+                logInfo("select PingPongHandler to service request")
                 return PingPongHandler(self.message)
             
-            if content.startswith("jj") or content.startswith("jijin") or content.startswith("fund") \
-                or content.startswith("gp") or content.startswith("gupiao") or content.startswith("stock"):
+            if content.startswith("jj") >= 0 or content.startswith("jijin") >= 0 \
+                or content.startswith("fund") >= 0 or content.startswith("gp") >= 0 \
+                or content.startswith("gupiao") >=0 or content.startswith("stock") >=0:
+                logInfo("select QueryFundHandler to service request")
                 return QueryFundHandler(self.message)
             
         return PingPongHandler(self.message)

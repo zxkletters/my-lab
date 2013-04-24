@@ -3,20 +3,21 @@ Created on 2013-4-20
 
 @author: zxkletters
 '''
-import logging
+# import logging
 import webapp2
 import parseWinXinMsg as WX
 from utils import checkSignature
 from utils import toUnicode
+from utils import logInfo
 from HandlerDispatcher import HandlerDispatcher
 
 # your token put here
 token = ""
 
 
-FORMAT = '%(asctime)-15s  %(message)s'
-logging.basicConfig(format=FORMAT, level=logging.INFO)
-logger = logging.getLogger(__name__)
+# FORMAT = '%(asctime)-15s  %(message)s'
+# logging.basicConfig(format=FORMAT, level=logging.INFO)
+# logger = logging.getLogger(__name__)
 
 class home(webapp2.RequestHandler):
     def get(self):
@@ -37,7 +38,7 @@ class home(webapp2.RequestHandler):
 #         if not checkSignature(signature = signature, timestamp = timestamp, nonce = nonce, token = token):
 #             webapp2.abort(403)
         
-        logger.info("request.body:\n%s" % self.request.body)
+        logInfo("request.body:\n%s" % self.request.body)
         message = WX.generateMessage(self.request.body)
         
         # you can handle message here, example: substring content,then reply

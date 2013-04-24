@@ -5,6 +5,17 @@ Created on 2013-4-20
 '''
 from hashlib import sha1
 import unittest
+import logging
+
+FORMAT = '%(asctime)-15s  %(message)s'
+logging.basicConfig(format=FORMAT, level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def logInfo(msg):
+    logger.info(msg)
+    
+def logError(msg):
+    logger.error(msg)
 
 def checkSignature(token=None, timestamp=None, nonce=None, signature=None):
     if token is None or timestamp is None or nonce is None or signature is None:
