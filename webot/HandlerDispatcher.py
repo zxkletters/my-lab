@@ -6,6 +6,7 @@ Created on 2013-4-22
 '''
 import time
 from Message import textTemplate
+import handler.QueryFundHandler as QueryFundHandler
 
 # __all__ = ["dispatcher"]
 
@@ -29,7 +30,18 @@ class HandlerDispatcher(object):
             pass
 
         # you can define your rule here, and return right handler
+        if self.message.msgType == "text":
+            content = self.message.content
+            
+            if content.find("ping") > 0 or content.find("Ping"):
+                return PingPongHandler(self.message)
+            
+            if content.startswith("jj") or content.startswith("jijin") or content.startswith("fund") \
+                or content.startswith("gp") or content.startswith("gupiao") or content.startswith("stock"):
+                return QueryFundHandler(self.message)
+            
         return PingPongHandler(self.message)
+
 
 class PingPongHandler(object):
     
