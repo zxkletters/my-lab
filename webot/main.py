@@ -1,3 +1,4 @@
+# coding=utf-8
 '''
 Created on 2013-4-20
 
@@ -7,17 +8,11 @@ Created on 2013-4-20
 import webapp2
 import parseWinXinMsg as WX
 from utils import checkSignature
-from utils import toUnicode
 from utils import logInfo
 from HandlerDispatcher import HandlerDispatcher
 
 # your token put here
 token = ""
-
-
-# FORMAT = '%(asctime)-15s  %(message)s'
-# logging.basicConfig(format=FORMAT, level=logging.INFO)
-# logger = logging.getLogger(__name__)
 
 class home(webapp2.RequestHandler):
     def get(self):
@@ -46,14 +41,14 @@ class home(webapp2.RequestHandler):
         replyString = handler.handle()
         
         self.response.content_type = "application/xml"
-        self.response.write(toUnicode(replyString))
+        self.response.write((replyString))
         
 class welcome(webapp2.RequestHandler):
     def get(self):
-        self.response.write("welcome! you may have interests to subscribe zxkletters")
+        self.response.write("welcome! you may have interests to subscribe Mee at WinXin mp")
     
     def post(self):
-        self.response.write("welcome! you may have interests to subscribe zxkletters")
+        self.response.write("welcome! you may have interests to subscribe Mee at WinXin mp")
 
 # your wsgi's app , url mapping shoud put here
 app = webapp2.WSGIApplication([
