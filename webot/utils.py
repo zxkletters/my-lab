@@ -4,9 +4,17 @@ Created on 2013-4-20
 
 @author: zxkletters
 '''
-from hashlib import sha1
-import unittest
+import time
 import logging
+from hashlib import sha1
+from Message import TextMessage, ImageMessage
+import unittest
+
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
+
 
 FORMAT = '%(asctime)-15s  %(message)s'
 logging.basicConfig(format=FORMAT, level=logging.INFO)
@@ -17,6 +25,9 @@ def logInfo(msg):
     
 def logError(msg):
     logger.error(msg)
+
+def logWarn(msg):
+    logger.warn(msg)
 
 def checkSignature(token=None, timestamp=None, nonce=None, signature=None):
     if token is None or timestamp is None or nonce is None or signature is None:
@@ -36,6 +47,30 @@ def toUnicode(value):
     if isinstance(value, bytes):
         return value.decode('utf-8')
     return value
+
+def generateMessage(receivedXml): 
+    try:
+        tree = ET.fromstring(receivedXml)
+        msgType = tree.find('MsgType').text
+        toUser = tree.find('ToUserName').text
+        fromUser = tree.find('FromUserName').text
+        createTime =  tree.find('CreateTime').text
+        
+        if msgType == "text":
+            content = toUnicode(tree.find('Content').text)
+            msgId = tree.find('MsgId').text
+            return TextMessage(toUserName=toUser, fromUserName = fromUser, 
+                               content = content, msgId = msgId, createTime = createTime)
+        if msgType == "image":
+            picUrl = tree.find('PicUrl').text
+            msgId = tree.find('MsgId').text
+            return ImageMessage(toUserName=toUser, fromUserName = fromUser,
+                                picUrl = picUrl, msgId = msgId, createTime = createTime)
+        
+    except:
+        logError("etree fromstring error, inputString:\n%s", receivedXml)
+        return None
+
 
 # test func
 if __name__ == "__main__":

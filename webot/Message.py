@@ -5,6 +5,7 @@ Created on 2013-4-22
 @author: zxkletters
 '''
 
+# templates
 textTemplate = '''
  <xml>
      <ToUserName><![CDATA[%s]]></ToUserName>
@@ -33,7 +34,7 @@ class BaseMessage(object):
 class TextMessage(BaseMessage):
     def __init__(self, toUserName, fromUserName, content, msgId, createTime):
         super(TextMessage, self).__init__(toUserName, fromUserName, "text", createTime)  
-        self.content = content
+        self.content = content.rstrip().lstrip()
         self.msgId = msgId
 
 
@@ -42,5 +43,3 @@ class ImageMessage(BaseMessage):
         super(TextMessage, self).__init__(toUserName, fromUserName, "image", createTime)  
         self.picUrl = picUrl
         self.msgId = msgId
-
-        

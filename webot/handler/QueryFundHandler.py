@@ -26,9 +26,9 @@ class QueryFundHandler(object):
         message = self.message
         if message.msgType == "text":
             qryCategory, _ , codes = message.content.partition(":")
+            helpInfos = "基金查询: jj:基金代码, 如: jj:040023 \n股票查询: gp:股票代码,如: gp:600030"               
             if not _ or not codes:
                 # reply help infos
-                helpInfos = "基金查询: jj:[基金代码], 如: jj:040023 \n股票查询: gp:[股票代码],如: gp:600030"               
                 return textTemplate % (message.fromUserName, message.toUserName, 
                                    time.time(), helpInfos, 0)
             
@@ -38,12 +38,9 @@ class QueryFundHandler(object):
                 qyrResult = self.batchFetchFoundInfos(codes.split(","))
                 return textTemplate % (message.fromUserName, message.toUserName, 
                                    time.time(), qyrResult, 0)
-            elif qryCategory == "gp" or qryCategory == "gupiao" or qryCategory.lower() == "stock":
-                return textTemplate % (message.fromUserName, message.toUserName, 
-                                   time.time(), "not support, but comming soon!", 0)
             else:
                 return textTemplate % (message.fromUserName, message.toUserName, 
-                                   time.time(), "yes,have received your message!", 0)
+                                   time.time(), helpInfos, 0)
         else:
             return None
             
@@ -71,7 +68,7 @@ class QueryFundHandler(object):
                                                     "Accept-Language":"zh-CN,zh;q=0.8"})
         response = conn.getresponse()
         if response.status == 200:
-            res = response.read()
+            res = response.read().decode("GBK")
             
             result = []
             for line in res.splitlines():
@@ -92,5 +89,5 @@ class QueryFundHandler(object):
         if not infos or len(infos) < 6:
             return ""
         else:
-            return "%s:\n日期:%s\n时间:%s\n最新估值:%s\n最新净值:%s\n涨跌幅:%s%s" \
-                % (infos[0], infos[7].replace("\";",""), infos[1], infos[2], infos[3], infos[6], "%")
+            return u"%s:\n日期:%s\n时间:%s\n最新估值:%s\n最新净值:%s\n涨跌幅:%s%s" \
+                % (infos[0].replace("\"",""), infos[7].replace("\";",""), infos[1], infos[2], infos[3], infos[6], "%")

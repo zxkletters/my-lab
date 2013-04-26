@@ -12,7 +12,7 @@ xml = """<xml><ToUserName><![CDATA[xiaoke]]></ToUserName>
  <FromUserName><![CDATA[zxkletters]]></FromUserName> 
  <CreateTime>%d</CreateTime>
  <MsgType><![CDATA[text]]></MsgType>
- <Content><![CDATA[Ping]]></Content>
+ <Content><![CDATA[ping]]></Content>
  <MsgId>1111111</MsgId>
 </xml>"""
 
@@ -25,7 +25,7 @@ valueList.sort()
 signature = sha1("".join(valueList)).hexdigest()
 url = "/gate?timestamp=" + timestamp + "&nonce=" + nonce + "&echostr=" + echostr + "&signature=" + signature
 
-conn = httplib.HTTPConnection(host="127.0.0.1", port=8080)
+conn = httplib.HTTPConnection(host="42.120.21.19", port=80)
 conn.request(method='POST', url=url, body=xml % time.time(), headers={"Content-Type": "application/xml"})
 response = conn.getresponse()
 

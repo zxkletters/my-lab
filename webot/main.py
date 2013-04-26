@@ -4,11 +4,10 @@ Created on 2013-4-20
 
 @author: zxkletters
 '''
-# import logging
 import webapp2
-import parseWinXinMsg as WX
 from utils import checkSignature
 from utils import logInfo
+from utils import generateMessage
 from HandlerDispatcher import HandlerDispatcher
 
 # your token put here
@@ -34,7 +33,7 @@ class home(webapp2.RequestHandler):
 #             webapp2.abort(403)
         
         logInfo("request.body:\n%s" % self.request.body)
-        message = WX.generateMessage(self.request.body)
+        message = generateMessage(self.request.body)
         
         # you can handle message here, example: substring content,then reply
         handler = HandlerDispatcher(message).dispatcher()

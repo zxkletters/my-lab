@@ -41,20 +41,20 @@ class HandlerDispatcher(object):
                 logInfo("select HelpHandler to service request")
                 return HelpHandler(self.message)
             
-            if content.startswith("jj") >= 0 or content.startswith("jijin") >= 0 \
-                or content.startswith("fund") >= 0:
+            if content.startswith("jj") or content.startswith("jijin") \
+                or content.startswith("fund"):
                 logInfo("select QueryFundHandler to service request")
                 return QueryFundHandler(self.message)
             
-            if content.startswith("gp") >= 0 or content.startswith("gupiao") >=0 \
-                or content.startswith("stock") >=0:
+            if content.startswith("gp") or content.startswith("gupiao") \
+                or content.startswith("stock"):
                 logInfo("select QueryStockHandler to service request")
                 return QueryStockHandler(self.message)
             
-            if content.find("ping") >= 0 or content.find("Ping") >= 0:
+            if content == "ping" or content == "Ping":
                 logInfo("select PingPongHandler to service request")
                 return PingPongHandler(self.message)
             
             return HelpHandler(self.message)
         else:
-            return PingPongHandler(self.message)        
+            return PingPongHandler(self.message)
