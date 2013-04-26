@@ -7,7 +7,7 @@ Created on 2013-4-20
 import time
 import logging
 from hashlib import sha1
-from Message import TextMessage, ImageMessage
+from Message import TextMessage, ImageMessage, EventMessage
 import unittest
 
 try:
@@ -66,6 +66,11 @@ def generateMessage(receivedXml):
             msgId = tree.find('MsgId').text
             return ImageMessage(toUserName=toUser, fromUserName = fromUser,
                                 picUrl = picUrl, msgId = msgId, createTime = createTime)
+        if msgType == "event":
+            event = tree.find('Event').text
+            eventKey = tree.find('EventKey').text
+            return EventMessage(toUserName=toUser, fromUserName = fromUser,
+                                event = event, eventKey = eventKey, createTime = createTime)
         
     except:
         logError("etree fromstring error, inputString:\n%s", receivedXml)

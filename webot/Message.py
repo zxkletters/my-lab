@@ -40,6 +40,12 @@ class TextMessage(BaseMessage):
 
 class ImageMessage(BaseMessage):
     def __init__(self, toUserName, fromUserName, picUrl, msgId, createTime):
-        super(TextMessage, self).__init__(toUserName, fromUserName, "image", createTime)  
+        super(ImageMessage, self).__init__(toUserName, fromUserName, "image", createTime)  
         self.picUrl = picUrl
         self.msgId = msgId
+
+class EventMessage(BaseMessage):
+    def __init__(self,toUserName, fromUserName, createTime, event, eventKey):
+        super(EventMessage, self).__init__(toUserName, fromUserName, "event", createTime)
+        self.event = event
+        self.eventKey = eventKey

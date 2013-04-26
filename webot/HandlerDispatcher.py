@@ -12,6 +12,8 @@ from handler.QueryFundHandler import QueryFundHandler
 from handler.HelpHandler import HelpHandler
 from handler.QueryStockHandler import QueryStockHandler
 from handler.PingPongHandler import PingPongHandler
+from handler.SubscribeEventHandler import SubscribeEventHandler
+from handler.UnsubscribeEventHandler import UnsubscribeEventHandler
 
 class HandlerDispatcher(object):
     '''
@@ -33,6 +35,7 @@ class HandlerDispatcher(object):
             pass
 
         # you can define your rule here, and return right handler
+ 
         if self.message.msgType == "text":
             content = self.message.content
             
@@ -56,5 +59,16 @@ class HandlerDispatcher(object):
                 return PingPongHandler(self.message)
             
             return HelpHandler(self.message)
+        elif self.message.msgType == "event":
+            event = self.message.event
+            
+            if event == "subscribe":
+                logInfo("select SubscribeEventHandler to service request")
+                return SubscribeEventHandler(self.message)
+            elif event == "unsubscribe":
+                logInfo("select UnsubscribeEventHandler to service request")
+                return UnsubscribeEventHandler(self.message)
+            else:
+                return HelpHandler(self.message)
         else:
             return PingPongHandler(self.message)
