@@ -13,6 +13,8 @@ from Message import textTemplate
 '''
 股票查询处理器
 '''
+HOST = "hq.sinajs.cn"
+PORT = 80
 
 class QueryStockHandler(object):
     
@@ -23,13 +25,68 @@ class QueryStockHandler(object):
         message = self.message
         if message.msgType == "text":
             qryCategory, _ , codes = message.content.partition(":")
+            helpInfos = "基金查询: jj:[基金代码], 如: jj:040023 \n股票查询: gp:[股票代码],如: gp:600030"              
             if not _ or not codes:
                 # reply help infos
-                helpInfos = "基金查询: jj:[基金代码], 如: jj:040023 \n股票查询: gp:[股票代码],如: gp:600030"              
                 return textTemplate % (message.fromUserName, message.toUserName, 
                                    time.time(), helpInfos, 0)
             
-            return textTemplate % (message.fromUserName, message.toUserName, 
-                                   time.time(), "not support now, but comming soon.", 0)
+            qryCategory = qryCategory.rstrip().lstrip()
+            codes = codes.rstrip().lstrip()
+            if qryCategory == "gp" or qryCategory == "gupiao" or qryCategory.lower() == "stock":
+                qyrResult = self.batchFetchStockInfos(codes.split(","))
+                return textTemplate % (message.fromUserName, message.toUserName, 
+                                   time.time(), qyrResult, 0)
+            else:
+                return textTemplate % (message.fromUserName, message.toUserName, 
+                                   time.time(), helpInfos, 0)
         else:
             return None
+    
+    def batchFetchStockInfos(self, stockList = []):
+        '''
+            batch get stock's infos
+            param stockList: your query stocks
+        '''
+        
+        if len(stockList) == 0:
+            logInfo("stock list is empty!") 
+            exit(0) 
+
+        params = []
+        params.append("%s=%s" % ("_",str(time.time())))
+        stockStrings = ""
+        for x in ["sh"+ x for x in stockList]:
+            stockStrings += x+","
+
+        params.append("%s=%s" % ("list",stockStrings))
+        conn = httplib.HTTPConnection(HOST, PORT)
+        conn.request('GET', "/?"+"&".join(params), "", {"User-Agent":"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.22 (KHTML, like Gecko) Chrome/25.0.1364.172 Safari/537.22",\
+                                                    "Host":HOST, \
+                                                    "Accept-Charset":"GBK,utf-8;q=0.7,*;q=0.3",\
+                                                    "Accept-Language":"zh-CN,zh;q=0.8"})
+        response = conn.getresponse()
+        if response.status == 200:
+            res = response.read().decode("GBK")
+            
+            result = []
+            for line in res.splitlines():
+                __,__,v = line.partition("=")
+                if not v:
+                    continue
+                
+                if v:
+                    finfo = self.printStockInfos(v)
+                    if finfo:
+                        result.append(finfo)
+            return "\n\n".join(result)
+        else:
+            print "query error! status =",response.status,";",response.reason
+
+    def printStockInfos(self, stockInfo):
+        infos = stockInfo.split(",")
+        if not infos:
+            return ""
+        else:
+            return u"%s:\n日期:%s\n时间:%s\n最新价:%s\n今开:%s\n最高:%s\n最低:%s\n昨收:%s\n涨跌幅:%s%s" \
+                % (infos[0].replace("\"",""), infos[-3], infos[-2], infos[3], infos[1], infos[4], infos[5], infos[2], round(((float(infos[3]) - float(infos[2])) / float(infos[2])) * 100, 2), "%")
