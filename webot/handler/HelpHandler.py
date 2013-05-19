@@ -19,11 +19,12 @@ class HelpHandler(object):
     def handle(self):
         message = self.message
         helpInfos = ("使用说明:\n"
-                     "目前只支持股票、基金查询功能.\n"
-                     "股票查询: gp:股票代码\n"
-                     "批量查询: gp:股票代码,股票代码\n"
-                     "基金查询: jj:基金代码\n"
-                     "批量查询: jj:基金代码,基金代码\n"
+                     "1.股票查询:\n"
+                     "格式: gp:股票代码,股票代码\n"
+                     "例子: gp:600030,600036\n"
+                     "2.基金查询:\n"
+                     "格式: jj:基金代码,基金代码\n"
+                     "例子: jj:040023\n"
                      "查看使用说明,请输入 'help' 或者 '?' "
                      )
         return textTemplate % (message.fromUserName, message.toUserName, 
