@@ -14,6 +14,7 @@ from handler.QueryStockHandler import QueryStockHandler
 from handler.PingPongHandler import PingPongHandler
 from handler.SubscribeEventHandler import SubscribeEventHandler
 from handler.UnsubscribeEventHandler import UnsubscribeEventHandler
+from handler.CalcDaysUntilNowHandler import CalcDaysUntilNowHandler
 
 class HandlerDispatcher(object):
     '''
@@ -53,6 +54,10 @@ class HandlerDispatcher(object):
                 or content.startswith("stock"):
                 logInfo("select QueryStockHandler to service request")
                 return QueryStockHandler(self.message)
+            
+            if content.startswith("days"):
+                logInfo("select CalcDaysBeforeHandler to service request")
+                return CalcDaysUntilNowHandler(self.message)
             
             if content == "ping" or content == "Ping":
                 logInfo("select PingPongHandler to service request")

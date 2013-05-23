@@ -25,6 +25,9 @@ class HelpHandler(object):
                      "2.基金查询:\n"
                      "格式: jj:基金代码,基金代码\n"
                      "例子: jj:040023\n"
+                     "3.间隔天数计算:\n"
+                     "格式: days:yyyy/MM/dd\n"
+                     "例子: days:2013/05/01\n\n"
                      "查看使用说明,请输入 'help' 或者 '?' "
                      )
         return textTemplate % (message.fromUserName, message.toUserName, 
