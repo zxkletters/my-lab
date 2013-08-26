@@ -17,6 +17,21 @@ textTemplate = '''
  </xml>
  '''
  
+musicTemplate = '''
+ <xml>
+   <ToUserName><![CDATA[%s]]></ToUserName>
+   <FromUserName><![CDATA[%s]]></FromUserName>
+   <CreateTime>%d</CreateTime>
+   <MsgType><![CDATA[music]]></MsgType>
+   <Music>
+     <Title><![CDATA[%s]]></Title>
+     <Description><![CDATA[%s]]></Description>
+     <MusicUrl><![CDATA[%s]]></MusicUrl>
+     <HQMusicUrl><![CDATA[%s]]></HQMusicUrl>
+   </Music>
+ </xml>
+ '''
+ 
 class BaseMessage(object):
     '''
     classdocs basic winxin's message object
@@ -43,6 +58,15 @@ class ImageMessage(BaseMessage):
         super(ImageMessage, self).__init__(toUserName, fromUserName, "image", createTime)  
         self.picUrl = picUrl
         self.msgId = msgId
+        
+class MusicMessage(BaseMessage):
+    def __init__(self, **kwargs): 
+#     def __init__(self, toUserName, fromUserName, picUrl, msgId, createTime):
+        super(MusicMessage, self).__init__(kwargs["toUserName"], kwargs["fromUserName"], "music", kwargs["createTime"])  
+        self.title = kwargs["title"]
+        self.description = kwargs["description"]
+        self.musicUrl = kwargs["musicUrl"]
+        self.hqMusicUrl = kwargs["hqMusicUrl"]
 
 class EventMessage(BaseMessage):
     def __init__(self,toUserName, fromUserName, createTime, event, eventKey):

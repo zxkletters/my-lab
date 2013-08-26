@@ -61,6 +61,7 @@ def generateMessage(receivedXml):
             msgId = tree.find('MsgId').text
             return TextMessage(toUserName=toUser, fromUserName = fromUser, 
                                content = content, msgId = msgId, createTime = createTime)
+            
         if msgType == "image":
             picUrl = tree.find('PicUrl').text
             msgId = tree.find('MsgId').text
