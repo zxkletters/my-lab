@@ -28,6 +28,9 @@ class HelpHandler(object):
                      "3.间隔天数计算:\n"
                      "格式: days:yyyy/MM/dd\n"
                      "例子: days:2013/05/01\n\n"
+                     "4.豆瓣FM:\n"
+                     "格式: fm:数字\n"
+                     "例子: fm:9\n\n"
                      "查看使用说明,请输入 'help' 或者 '?' "
                      )
         return textTemplate % (message.fromUserName, message.toUserName, 
