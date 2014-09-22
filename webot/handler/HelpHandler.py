@@ -27,11 +27,14 @@ class HelpHandler(object):
                      "例子: jj:040023\n"
                      "3.间隔天数计算:\n"
                      "格式: days:yyyy/MM/dd\n"
-                     "例子: days:2013/05/01\n\n"
+                     "例子: days:2013/05/01\n"
                      "4.豆瓣FM:\n"
-                     "格式: fm:数字\n"
-                     "例子: fm:9\n\n"
+                     "格式: fm:channel\n"
+                     "例子: fm:9\n"
+                      "5.订阅股票:\n"
+                     "格式: sbgp:类型 股票代码 期望价格(达到后会发通知消息)\n"
+                     "例子: sbgp:m baba 100\n\n"
                      "查看使用说明,请输入 'help' 或者 '?' "
                      )
-        return textTemplate % (message.fromUserName, message.toUserName, 
+        return textTemplate % (message.fromUserName, message.toUserName,
                                    time.time(), helpInfos, 0)

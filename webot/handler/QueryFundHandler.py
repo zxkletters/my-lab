@@ -4,15 +4,16 @@ Created on 2013-4-23
 
 @author: zxkletters
 '''
-import time
-from utils import logInfo
-from utils import toUnicode
-import httplib
-from Message import textTemplate
-
 '''
 基金查询处理器
 '''
+
+import httplib
+import time
+
+from Message import textTemplate
+from utils import logInfo
+
 
 HOST = "hq.sinajs.cn"
 PORT = 80
@@ -26,25 +27,25 @@ class QueryFundHandler(object):
         message = self.message
         if message.msgType == "text":
             qryCategory, _ , codes = message.content.partition(":")
-            helpInfos = "基金查询: jj:基金代码, 如: jj:040023 \n股票查询: gp:股票代码,如: gp:600030"               
+            helpInfos = "基金查询: jj:基金代码, 如: jj:040023"               
             if not _ or not codes:
                 # reply help infos
-                return textTemplate % (message.fromUserName, message.toUserName, 
+                return textTemplate % (message.fromUserName, message.toUserName,
                                    time.time(), helpInfos, 0)
             
             qryCategory = qryCategory.rstrip().lstrip()
             codes = codes.rstrip().lstrip()
             if qryCategory == "jj" or qryCategory == "jijin" or qryCategory.lower() == "fund":
                 qyrResult = self.batchFetchFoundInfos(codes.split(","))
-                return textTemplate % (message.fromUserName, message.toUserName, 
+                return textTemplate % (message.fromUserName, message.toUserName,
                                    time.time(), qyrResult, 0)
             else:
-                return textTemplate % (message.fromUserName, message.toUserName, 
+                return textTemplate % (message.fromUserName, message.toUserName,
                                    time.time(), helpInfos, 0)
         else:
             return None
             
-    def batchFetchFoundInfos(self, fundList = []):
+    def batchFetchFoundInfos(self, fundList=[]):
         '''
             batch get found's infos
             param fundList: your query funds
@@ -55,16 +56,16 @@ class QueryFundHandler(object):
             exit(0) 
 
         params = []
-        params.append("%s=%s" % ("_",str(time.time())))
+        params.append("%s=%s" % ("_", str(time.time())))
         fundStrings = ""
-        for x in ["fu_"+ x for x in fundList]:
-            fundStrings += x+","
+        for x in ["fu_" + x for x in fundList]:
+            fundStrings += x + ","
 
-        params.append("%s=%s" % ("list",fundStrings))
+        params.append("%s=%s" % ("list", fundStrings))
         conn = httplib.HTTPConnection(HOST, PORT)
-        conn.request('GET', "/?"+"&".join(params), "", {"User-Agent":"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.22 (KHTML, like Gecko) Chrome/25.0.1364.172 Safari/537.22",\
+        conn.request('GET', "/?" + "&".join(params), "", {"User-Agent":"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.22 (KHTML, like Gecko) Chrome/25.0.1364.172 Safari/537.22", \
                                                     "Host":HOST, \
-                                                    "Accept-Charset":"GBK,utf-8;q=0.7,*;q=0.3",\
+                                                    "Accept-Charset":"GBK,utf-8;q=0.7,*;q=0.3", \
                                                     "Accept-Language":"zh-CN,zh;q=0.8"})
         response = conn.getresponse()
         if response.status == 200:
@@ -72,17 +73,17 @@ class QueryFundHandler(object):
             
             result = []
             for line in res.splitlines():
-                __,__,v = line.partition("=")
+                __, __, v = line.partition("=")
                 if not v:
                     continue
                 
-                if v:
+                if v and len(v) > 0:
                     finfo = self.printFundInfos(v)
                     if finfo:
                         result.append(finfo)
             return "\n\n".join(result)
         else:
-            print "query error! status =",response.status,";",response.reason
+            print "query error! status =", response.status, ";", response.reason
 
     def printFundInfos(self, fundInfo):
         infos = fundInfo.split(",")
@@ -90,4 +91,4 @@ class QueryFundHandler(object):
             return ""
         else:
             return u"%s:\n日期:%s\n时间:%s\n最新估值:%s\n最新净值:%s\n涨跌幅:%s%s" \
-                % (infos[0].replace("\"",""), infos[7].replace("\";",""), infos[1], infos[2], infos[3], infos[6], "%")
+                % (infos[0].replace("\"", ""), infos[7].replace("\";", ""), infos[1], infos[2], infos[3], infos[6], "%")

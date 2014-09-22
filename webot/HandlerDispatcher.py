@@ -4,18 +4,18 @@ Created on 2013-4-22
 
 @author: zxkletters
 '''
-import time
-from utils import logInfo
-from utils import toUnicode
-from Message import textTemplate
-from handler.QueryFundHandler import QueryFundHandler
-from handler.HelpHandler import HelpHandler
-from handler.QueryStockHandler import QueryStockHandler
-from handler.PingPongHandler import PingPongHandler
-from handler.SubscribeEventHandler import SubscribeEventHandler
-from handler.UnsubscribeEventHandler import UnsubscribeEventHandler
 from handler.CalcDaysUntilNowHandler import CalcDaysUntilNowHandler
 from handler.DoubanFMHandler import DoubanFMHandler
+from handler.HelpHandler import HelpHandler
+from handler.PingPongHandler import PingPongHandler
+from handler.QueryFundHandler import QueryFundHandler
+from handler.QueryStockHandler import QueryStockHandler
+from handler.SubscribeEventHandler import SubscribeEventHandler
+from handler.SubscribeStockHandler import SubscribeStockHandler
+from handler.UnsubscribeEventHandler import UnsubscribeEventHandler
+from utils import logInfo
+from utils import toUnicode
+
 
 class HandlerDispatcher(object):
     '''
@@ -63,6 +63,10 @@ class HandlerDispatcher(object):
             if content.startswith("fm") or content.startswith("FM"):
                 logInfo("select DoubanFMHandler to service request")
                 return DoubanFMHandler(self.message)
+            
+            if content.startswith("sbgp") or content.startswith("SBGP"):
+                logInfo("select SubscribeStockHandler to service request")
+                return SubscribeStockHandler(self.message)
             
             if content == "ping" or content == "Ping":
                 logInfo("select PingPongHandler to service request")

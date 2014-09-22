@@ -1,11 +1,11 @@
 # coding=utf-8
 '''
-Created on 2013-4-25
+Created on 2014-9-22
 
 @author: zxkletters
 '''
 '''
-股票查询处理器
+订阅股票处理器,股票到指定价格后会自动推通知消息
 '''
 
 import httplib
@@ -18,7 +18,7 @@ from utils import logInfo
 HOST = "hq.sinajs.cn"
 PORT = 80
 
-class QueryStockHandler(object):
+class SubscribeStockHandler(object):
     
     def __init__(self, message):
         self.message = message
@@ -26,42 +26,42 @@ class QueryStockHandler(object):
     def handle(self):
         message = self.message
         if message.msgType == "text":
-            qryCategory, _ , codes = message.content.partition(":")
-            helpInfos = "股票查询: gp:[股票代码], 如: gp:600030"              
-            if not _ or not codes:
+            qryCategory, _ , values = message.content.partition(":")
+            helpInfos = "订阅股票: sbgp:[美股|A股] [股票代码] 100,如: sbgp:m baba 100"
+            
+            if qryCategory != "sbgp" or qryCategory != "SBGP":
+                return textTemplate % (message.fromUserName, message.toUserName,
+                                   time.time(), helpInfos, 0)
+            if not _ or not values:
+                # reply help infos
+                return textTemplate % (message.fromUserName, message.toUserName,
+                                   time.time(), helpInfos, 0)
+                
+            sbValues = values.split(" ")
+            if len(sbValues) != 3:
                 # reply help infos
                 return textTemplate % (message.fromUserName, message.toUserName,
                                    time.time(), helpInfos, 0)
             
-            qryCategory = qryCategory.rstrip().lstrip()
-            codes = codes.rstrip().lstrip()
-            if qryCategory == "gp" or qryCategory == "gupiao" or qryCategory.lower() == "stock":
-                qyrResult = self.batchFetchStockInfos(codes.split(","))
-                return textTemplate % (message.fromUserName, message.toUserName,
+            qyrResult = self.batchFetchStockInfos([ x.rstrip().lstrip() for x in sbValues ])
+            return textTemplate % (message.fromUserName, message.toUserName,
                                    time.time(), qyrResult, 0)
-            else:
-                return textTemplate % (message.fromUserName, message.toUserName,
-                                   time.time(), helpInfos, 0)
         else:
             return None
     
-    def batchFetchStockInfos(self, stockList=[]):
-        '''
-            batch get stock's infos
-            param stockList: your query stocks
-        '''
-        
-        if len(stockList) == 0:
-            logInfo("stock list is empty!") 
+    def batchFetchStockInfos(self, sbValues=[]):
+        stockType, stock, stockPriceWithNotify = sbValues
+        if not stockType and not stock and not stockPriceWithNotify:
+            logInfo("sbValues is invalid!") 
             exit(0) 
 
         params = []
         params.append("%s=%s" % ("_", str(time.time())))
-        stockStrings = ""
-        for x in ["sh" + x for x in stockList]:
-            stockStrings += x + ","
-
-        params.append("%s=%s" % ("list", stockStrings))
+        if stockType == "m":            
+            params.append("%s=%s" % ("list", "gb_" + stock))
+        else:
+            params.append("%s=%s" % ("list", "sh" + stock))
+        
         conn = httplib.HTTPConnection(HOST, PORT)
         conn.request('GET', "/?" + "&".join(params), "", {"User-Agent":"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.22 (KHTML, like Gecko) Chrome/25.0.1364.172 Safari/537.22", \
                                                     "Host":HOST, \
