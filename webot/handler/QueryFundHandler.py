@@ -12,6 +12,7 @@ import httplib
 import time
 
 from Message import textTemplate
+import Message
 from utils import logInfo
 
 
@@ -88,7 +89,14 @@ class QueryFundHandler(object):
     def printFundInfos(self, fundInfo):
         infos = fundInfo.split(",")
         if not infos or len(infos) < 6:
-            return ""
+            return u"查询的基金不存在."
         else:
             return u"%s:\n日期:%s\n时间:%s\n最新估值:%s\n最新净值:%s\n涨跌幅:%s%s" \
                 % (infos[0].replace("\"", ""), infos[7].replace("\";", ""), infos[1], infos[2], infos[3], infos[6], "%")
+                
+if __name__ == '__main__':
+    a = QueryFundHandler(Message.TextMessage("test", "test2", "jj:notexist", 100, 329875))
+    print a.handle()
+    
+    b = QueryFundHandler(Message.TextMessage("test", "test2", "jj:040023", 100, 329875))
+    print b.handle()

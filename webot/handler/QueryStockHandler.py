@@ -12,6 +12,7 @@ import httplib
 import time
 
 from Message import textTemplate
+import Message
 from utils import logInfo
 
 
@@ -36,7 +37,7 @@ class QueryStockHandler(object):
             qryCategory = qryCategory.rstrip().lstrip()
             codes = codes.rstrip().lstrip()
             if qryCategory == "gp" or qryCategory == "gupiao" or qryCategory.lower() == "stock":
-                qyrResult = self.batchFetchStockInfos(codes.split(","))
+                qyrResult = self.getStockInfo(codes.split(","))
                 return textTemplate % (message.fromUserName, message.toUserName,
                                    time.time(), qyrResult, 0)
             else:
@@ -45,7 +46,7 @@ class QueryStockHandler(object):
         else:
             return None
     
-    def batchFetchStockInfos(self, stockList=[]):
+    def getStockInfo(self, stockList=[]):
         '''
             batch get stock's infos
             param stockList: your query stocks
@@ -87,8 +88,15 @@ class QueryStockHandler(object):
 
     def printStockInfos(self, stockInfo):
         infos = stockInfo.split(",")
-        if not infos:
-            return ""
+        if not infos or len(infos) < 3:
+            return u"查询的股票不存在."
         else:
             return u"%s:\n日期:%s\n时间:%s\n最新价:%s\n今开:%s\n最高:%s\n最低:%s\n昨收:%s\n涨跌幅:%s%s" \
                 % (infos[0].replace("\"", ""), infos[-3], infos[-2], infos[3], infos[1], infos[4], infos[5], infos[2], round(((float(infos[3]) - float(infos[2])) / float(infos[2])) * 100, 2), "%")
+                
+if __name__ == '__main__':
+    a = QueryStockHandler(Message.TextMessage("test", "test2", "gp:notexist", 100, 329875))
+    print a.handle()
+    
+    b = QueryStockHandler(Message.TextMessage("test", "test2", "gp:600030", 100, 329875))
+    print b.handle()
