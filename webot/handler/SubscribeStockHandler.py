@@ -10,6 +10,8 @@ Created on 2014-9-22
 
 import gevent
 import httplib
+import sched
+import threading
 import time
 
 from Message import textTemplate
@@ -20,6 +22,9 @@ from utils import logInfo
 HOST = "hq.sinajs.cn"
 PORT = 80
 subscribes = []
+s = sched.scheduler(time.time, time.sleep)
+# interval time: 5s
+schedulInterval = 10
 
 class SubscribeStockHandler(object):
     
@@ -43,16 +48,29 @@ class SubscribeStockHandler(object):
                                        time.time(), helpInfos, 0)
                 
                 newSbVal = [ x.rstrip().lstrip() for x in sbValues ]
-                subscribes.append(SubscribeItem(message.fromUserName, newSbVal[0], newSbVal[1], newSbVal[2]))
-                # TODO schedule task execute subscribes
+                
+                # TODO 没有主动推送消息给用户的调用
+#                 subscribes.append(SubscribeItem(message.fromUserName, newSbVal[0], newSbVal[1], newSbVal[2]))
+#                 s.enter(2, 0, self.schedulStockNewstPrice, ())
+#                 t = threading.Thread(target=s.run)
+#                 t.start()
                 qyrResult = self.getStockInfo(newSbVal)
                 return textTemplate % (message.fromUserName, message.toUserName,
-                                       time.time(), qyrResult, 0)
+                                       time.time(), u"订阅成功.该股票价格达到%s后会消息通知您.\n%s" % (newSbVal[2], qyrResult), 0)
             else:
                 return textTemplate % (message.fromUserName, message.toUserName,
                                    time.time(), helpInfos, 0)
         else:
             return None
+    
+    def schedulStockNewstPrice(self):
+        s.enter(schedulInterval, 0, self.schedulStockNewstPrice, ())
+        self.eachAllSubscribes()
+    
+    def eachAllSubscribes(self):
+        print time.time()
+        for item in subscribes:
+            print item.userId , item.stockType, item.stock, item.expPrice 
     
     def getStockInfo(self, sbValues=[]):
         stockType, stock, stockPriceWithNotify = sbValues

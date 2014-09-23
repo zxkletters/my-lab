@@ -5,10 +5,12 @@ Created on 2013-4-20
 @author: zxkletters
 '''
 import webapp2
-from utils import checkSignature
-from utils import logInfo
-from utils import generateMessage
+
 from HandlerDispatcher import HandlerDispatcher
+from utils import checkSignature
+from utils import generateMessage
+from utils import logInfo
+
 
 # your token put here
 token = ""
@@ -20,7 +22,7 @@ class home(webapp2.RequestHandler):
         nonce = self.request.get("nonce", None)
         echostr = self.request.get("echostr", None)
         
-        if checkSignature(signature = signature, timestamp = timestamp, nonce = nonce, token = token):
+        if checkSignature(signature=signature, timestamp=timestamp, nonce=nonce, token=token):
             self.response.write(echostr)
         else:
             webapp2.abort(403)
@@ -40,6 +42,7 @@ class home(webapp2.RequestHandler):
         replyString = handler.handle()
         
         self.response.content_type = "application/xml"
+        logInfo("response.body:\n%s" % replyString)
         self.response.write((replyString))
         
 class welcome(webapp2.RequestHandler):
